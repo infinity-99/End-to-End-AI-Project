@@ -1,23 +1,20 @@
-# Use Python base image
 FROM python:3.12-slim
 
-# Set working directory inside container
+# Set the working directory
 WORKDIR /app
 
-# Copy dependency file first for Docker cache
-COPY requirements.txt .
-
 # Install dependencies
+COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copy all files
+# Copy the rest of the app
 COPY . .
 
-# Create .streamlit directory with proper permissions
-RUN mkdir -p /app/.streamlit
+# FIX: Write config to $HOME/.streamlit, not root or /app
+ENV STREAMLIT_HOME=/root
 
-# Add basic Streamlit config to suppress warnings and errors
-RUN echo "\
+RUN mkdir -p $STREAMLIT_HOME/.streamlit && \
+    echo "\
 [general]\n\
 email = \"\"\n\
 \n\
@@ -29,7 +26,6 @@ enableXsrfProtection=false\n\
 \n\
 [browser]\n\
 gatherUsageStats = false\n\
-" > /app/.streamlit/config.toml
+" > $STREAMLIT_HOME/.streamlit/config.toml
 
-# Set Streamlit to run your main app
 CMD ["streamlit", "run", "app.py", "--server.port=7860", "--server.address=0.0.0.0"]
