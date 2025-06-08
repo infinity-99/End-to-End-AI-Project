@@ -1,19 +1,20 @@
-FROM python:3.12-slim
+FROM python:3.10-slim
 
-# Set the working directory
+# Set a custom, writable home directory
+ENV HOME=/app
+ENV STREAMLIT_HOME=$HOME
+
 WORKDIR /app
 
-# Install dependencies
+# Copy dependency file and install
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copy the rest of the app
+# Copy code
 COPY . .
 
-# FIX: Write config to $HOME/.streamlit, not root or /app
-ENV STREAMLIT_HOME=/root
-
-RUN mkdir -p $STREAMLIT_HOME/.streamlit && \
+# Create .streamlit config directory in writable home
+RUN mkdir -p $HOME/.streamlit && \
     echo "\
 [general]\n\
 email = \"\"\n\
@@ -26,6 +27,7 @@ enableXsrfProtection=false\n\
 \n\
 [browser]\n\
 gatherUsageStats = false\n\
-" > $STREAMLIT_HOME/.streamlit/config.toml
+" > $HOME/.streamlit/config.toml
 
+# Run Streamlit from app.py
 CMD ["streamlit", "run", "app.py", "--server.port=7860", "--server.address=0.0.0.0"]
