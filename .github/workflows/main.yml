@@ -1,0 +1,8 @@
+name: Sync to Hugging Face SpaceAdd commentMore actions
+on:
+  push:
+    branches: [main]
+      - name: Push to hubAdd commentMore actions
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: git push --force https://AsheemMishra:$HF_TOKEN@huggingface.co/spaces/AsheemMishra/agenticai main
