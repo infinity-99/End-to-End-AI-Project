@@ -36,6 +36,8 @@ class GraphBuilder:
         self.graph_builder.add_edge(START,"chatbot")
         self.graph_builder.add_conditional_edges("chatbot", tools_condition)
         self.graph_builder.add_edge("tools","chatbot")
+        self.graph_builder.add_edge("chatbot", END)
+
 
     def __init__(self,model):
         self.llm=model
